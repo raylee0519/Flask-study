@@ -1,6 +1,6 @@
 from flask import Flask
 
-from .models import db
+from .src.models import db
 from . import config
 import os
 
