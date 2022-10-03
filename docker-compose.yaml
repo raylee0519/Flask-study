@@ -20,4 +20,4 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
     ports:
-      - '5000:5100'
+      - '5100:5100'
