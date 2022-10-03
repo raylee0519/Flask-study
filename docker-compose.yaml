@@ -1,38 +1,60 @@
-version: "3.8"
+# vim docker-compose.yml
+version: '3.0'  # version 정의
+services:  # service 아래단에 정의
+  main:  # main에 관련
+    build:
+      context: .
+      dockerfile: ./Dockerfile_main  # build 시킬 dockerfile
+    image: main:0.0  # 사용자 지정 image 이름
+    ports:
+     - "80:8000"  # open port 설정
+    networks:
+     - project_network  # network 설정
 
-services:
-    web:
-        build:
-            context: ./backend
-        env_file:
-            - .env
-        ports:
-            - 5100:5100
-        environment:
-            - FLASK_APP=./src/app.py
-        volumes:
-            - ./:/app
+  flask01:  # flask01에 관련
+    build:
+      context: .
+      dockerfile: ./Dockerfile_python_01  # build 시킬 dockerfile
+    image: flask01:0.0  # 사용자 지정 image 이름
+    ports:
+     - "8081:8000"  # open port 설정
+    networks:
+     - project_network  # network 설정
 
-    postgres:
-        container_name: postgres
-        image: postgres:latest
-        ports:
-            - 5432:5432
-        environment:
-            - POSTGRES_DB=${PG_DB}
-            - POSTGRES_USER=${PG_USER}
-            - POSTGRES_PASSWORD=${PG_PASSWORD}
-        volumes:
-            - postgres:/var/lib/postgres
+  flask02:
+    build:
+      context: .
+      dockerfile: ./Dockerfile_python_02
+    image: flask02:0.0
+    ports:
+     - "8082:8000"
+    networks:
+     - project_network
 
-    pgadmin:
-        container_name: pgadmin
-        image: dpage/pgadmin4
-        ports:
-            - 8088:80
-        environment:
-            - PGADMIN_DEFAULT_EMAIL=${PG_ADMIN_EMAIL}
-            - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+  mariadb01:  # mariadb01에 관련
+    build:
+      context: .
+      dockerfile: ./Dockerfile_mariaDB_01  # build할 dockerfile 지정
+    image: mariadb01:0.0  # 사용자 지정 image 이름
+    volumes:  
+      - mariadb:/var/lib/mysql  # volume 설정, my.cnf에 정의
+    networks:
+      - project_network  # network 설정
 
-volumes:
-    postgres:
+  mariadb02:
+    build:
+      context: .
+      dockerfile: ./Dockerfile_mariaDB_02
+    image: mariadb02:0.0
+    volumes:
+     - mariadb2:/var/lib/mysql
+    networks:
+     - project_network
+volumes:  # volume 정의
+  mariadb:
+    external: true  # 기존의 볼륨을 사용하도록 설정
+  mariadb2:
+    external: true
+networks:
+  project_network:
+    external: true  # 기존의 네트워크를 사용하도록 설정
