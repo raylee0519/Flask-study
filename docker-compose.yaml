@@ -1,17 +1,23 @@
-version: "3"
-services:
-  app:
-    build: ./app
-    links:
-      - db
-    ports:
-      - "5000:5000"
+version: "3.2"
 
-  db:
-    image: mysql:8.0.21
-    ports:
-      - "30000:3306"
+services:
+  db-server:
+    image: mariadb:latest
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
     volumes:
-      - ./db:/docker-entrypoint-initdb.d/:ro
+        - ./backend/db:/db
+    ports:
+      - '3306:3306'
+  server:
+    build: backend/
+    volumes:
+      - ./backend/app:/app
+    depends_on:
+      - db-server
+    environment:
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    ports:
+      - '5000:5100'
